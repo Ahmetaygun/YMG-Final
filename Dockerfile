@@ -14,19 +14,15 @@ ENV PATH=$PATH:$GLASSFISH_HOME/bin
 ENV DEPLOY_DIR $GLASSFISH_HOME/glassfish/domains/domain1/autodeploy/
 
 # İhtiyaç duyulan portları açıyoruz
-EXPOSE 4848 8080 8181
+EXPOSE 4848 8090 8181
 
-# Uygulamanızı deploy etmek için WAR dosyanızı ekleyebilirsiniz (örneğin, myapp.war)
-# ADD myapp.war $DEPLOY_DIR
+# myapp.war dosyasını helloweb dizinine ekliyoruz
+ADD myapp.war $DEPLOY_DIR/helloweb.war
 
-# GlassFish yönetim konsolu parolasını ayarlayabilirsiniz (opsiyonel)
-# RUN echo 'AS_ADMIN_PASSWORD=yourpassword' > /tmp/glassfishpwd
-# RUN echo 'AS_ADMIN_NEWPASSWORD=yournewpassword' >> /tmp/glassfishpwd
-# RUN asadmin --user admin --passwordfile /tmp/glassfishpwd change-admin-password --domain_name domain1
-# RUN asadmin start-domain && \
-#     asadmin --user admin --passwordfile /tmp/glassfishpwd enable-secure-admin && \
-#     asadmin stop-domain && \
-#     rm /tmp/glassfishpwd
+# HTTP listener portunu 8090 olarak değiştiriyoruz
+RUN $GLASSFISH_HOME/bin/asadmin start-domain && \
+    $GLASSFISH_HOME/bin/asadmin set configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.port=8090 && \
+    $GLASSFISH_HOME/bin/asadmin stop-domain
 
 # GlassFish sunucusunu başlatıyoruz
 CMD ["asadmin", "start-domain", "-v"]

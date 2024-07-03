@@ -6,17 +6,17 @@ services:
     container_name: nginx-proxy
     restart: always
     ports:
-      - "443:443"
       - "80:80"
+      - "8090:8090"
     volumes:
       - ./www:/var/www:ro
       - ./conf.d:/etc/nginx/conf.d:ro
       - ./ssl:/etc/nginx/ssl:ro
       - ./snippets:/etc/nginx/snippets:ro
       - ./protect:/etc/nginx/protect:ro
+    networks:
+      - glassfish-network
 
-  # Let's Encrypt / Certbot
-  # Check README.md to know how to issue new certs.
   certbot:
     image: certbot/certbot
     container_name: certbot
@@ -31,9 +31,20 @@ services:
     command: [
       "renew",
     ]
+    networks:
+      - glassfish-network
 
-# Use the same external network in $upstream containers.
+  glassfish:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: glassfish
+    ports:
+      - "4848:4848"
+      - "8080:8080"
+    networks:
+      - glassfish-network
+
 networks:
-  default:
-    name: www-network
+  glassfish-network:
     external: true
