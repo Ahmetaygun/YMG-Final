@@ -1,20 +1,32 @@
-FROM        java:8-jdk
+# Base image olarak OpenJDK 8 kullanıyoruz
+FROM openjdk:8-jdk
 
-ENV         JAVA_HOME         /usr/lib/jvm/java-8-openjdk-amd64
-ENV         GLASSFISH_HOME    /usr/local/glassfish4
-ENV         PATH              $PATH:$JAVA_HOME/bin:$GLASSFISH_HOME/bin
+# GlassFish 4.1.1'in indirilmesi ve kurulması
+ENV GLASSFISH_VERSION 4.1.1
+ENV GLASSFISH_HOME /opt/glassfish4
 
-RUN         apt-get update && \
-            apt-get install -y curl unzip zip inotify-tools && \
-            rm -rf /var/lib/apt/lists/*
+RUN wget -q http://download.oracle.com/glassfish/${GLASSFISH_VERSION}/release/glassfish-${GLASSFISH_VERSION}.zip -O /tmp/glassfish.zip && \
+    unzip /tmp/glassfish.zip -d /opt/ && \
+    rm /tmp/glassfish.zip
 
-RUN         curl -L -o /tmp/glassfish-4.1.zip http://download.java.net/glassfish/4.1/release/glassfish-4.1.zip && \
-            unzip /tmp/glassfish-4.1.zip -d /usr/local && \
-            rm -f /tmp/glassfish-4.1.zip
+# Ortam değişkenlerini ayarlıyoruz
+ENV PATH=$PATH:$GLASSFISH_HOME/bin
+ENV DEPLOY_DIR $GLASSFISH_HOME/glassfish/domains/domain1/autodeploy/
 
-EXPOSE      8080 4848 8181
+# İhtiyaç duyulan portları açıyoruz
+EXPOSE 4848 8080 8181
 
-WORKDIR     /usr/local/glassfish4
+# Uygulamanızı deploy etmek için WAR dosyanızı ekleyebilirsiniz (örneğin, myapp.war)
+# ADD myapp.war $DEPLOY_DIR
 
-# verbose causes the process to remain in the foreground so that docker can track it
-CMD         asadmin start-domain --verbose
+# GlassFish yönetim konsolu parolasını ayarlayabilirsiniz (opsiyonel)
+# RUN echo 'AS_ADMIN_PASSWORD=yourpassword' > /tmp/glassfishpwd
+# RUN echo 'AS_ADMIN_NEWPASSWORD=yournewpassword' >> /tmp/glassfishpwd
+# RUN asadmin --user admin --passwordfile /tmp/glassfishpwd change-admin-password --domain_name domain1
+# RUN asadmin start-domain && \
+#     asadmin --user admin --passwordfile /tmp/glassfishpwd enable-secure-admin && \
+#     asadmin stop-domain && \
+#     rm /tmp/glassfishpwd
+
+# GlassFish sunucusunu başlatıyoruz
+CMD ["asadmin", "start-domain", "-v"]
