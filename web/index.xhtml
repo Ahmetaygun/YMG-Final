@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+  <h:head>
+    <title>Welcome</title>
+  </h:head>
+  <h:body>
+    <h:form>
+      <h:outputLabel id="nameLabel" value="Name"></h:outputLabel>
+      <br/>
+      <h:inputText id="nameText" value="#{userInfoBean.name}"></h:inputText>
+      <br/>
+      <h:outputLabel id="addressLabel" value="Address"></h:outputLabel>
+      <br/>
+      <h:inputText id="addressText" value="#{userInfoBean.address}"></h:inputText>
+      <br/>
+      <h:outputLabel id="emailLabel" value="Email"></h:outputLabel>
+      <br/>
+      <h:inputText id="emailText" value="#{userInfoBean.email}"></h:inputText>
+      <br/>
+      <h:outputLabel id="phoneLabel" value="Phone"></h:outputLabel>
+      <br/>
+      <h:inputText id="phoneText" value="#{userInfoBean.phone}"></h:inputText>
+      <br/>
+      <h:commandButton value="Send" style="margin-top: 10px;" action="ok"></h:commandButton>
+    </h:form>
+  </h:body>
+</html>
+
